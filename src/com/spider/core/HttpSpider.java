@@ -9,14 +9,13 @@ import java.net.URL;
 
 import com.spider.entity.HtmlPage;
 import com.spider.entity.Page;
+import com.spider.util.common.Analyzer;
 
 public class HttpSpider {
 	
 	public  Page getHtmlContent(URL url, String encode) {  
 		Page page = new HtmlPage();
-		
         StringBuffer contentBuffer = new StringBuffer();  
-        
         int responseCode = -1;  
         HttpURLConnection con = null;  
         try {  
@@ -24,7 +23,6 @@ public class HttpSpider {
             con.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");// IE代理进行下载  
             con.setConnectTimeout(60000);  
             con.setReadTimeout(60000);  
-            // 获得网页返回信息码  
             responseCode = con.getResponseCode();  
             if (responseCode == -1) {  
                 System.out.println(url.toString() + " : connection is failure...");  
@@ -44,7 +42,7 @@ public class HttpSpider {
   
             String str = null;  
             while ((str = buffStr.readLine()) != null)  
-                contentBuffer.append(str+'\n');  
+                contentBuffer.append(str);  
             inStr.close();  
         } catch (IOException e) {  
             e.printStackTrace();  
@@ -54,6 +52,9 @@ public class HttpSpider {
             con.disconnect();  
         }  
         page.setContent(contentBuffer.toString());
+        Analyzer.analyzeHttpUrl(page, "\"");
+       
+        System.out.println(Analyzer.generateImageFiles(Analyzer.analyzeImages(page))); 
         return page;  
     }  
   
