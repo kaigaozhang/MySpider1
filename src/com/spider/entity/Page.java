@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Page {
-  public static Type PAGETYPE;
+  public static Types PAGETYPE;
   private String Httpurl;
-  private String suffix;
+  private String suffix; 
   private byte[] data;
   private String content;
   private List<String> hrefUrl = new ArrayList<String>();

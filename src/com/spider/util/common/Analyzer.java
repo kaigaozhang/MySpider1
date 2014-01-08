@@ -53,7 +53,6 @@ public class Analyzer {
 			   if(imageDes.getName().indexOf(';')!=-1||imageDes.getName().indexOf('=')!=-1||imageDes.getName().indexOf(':')!=-1){
 			    	continue;
 			    }
-			   
 			URL url = new URL(imageDes.getUrl());
 		    //打开网络输入流
 		    DataInputStream dis = new DataInputStream(url.openStream());
@@ -62,9 +61,6 @@ public class Analyzer {
 		    if(!file.exists()){
 		    file.mkdirs();
 		    }
-		    
-		  
-		    
 		    File f1=new File(file,imageDes.getName()+"."+imageDes.getSuffix());
 		    f1.createNewFile();
 		    FileOutputStream fos = new FileOutputStream(f1);

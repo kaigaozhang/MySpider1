@@ -7,12 +7,18 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.apache.log4j.Logger;
+
 import com.spider.entity.HtmlPage;
 import com.spider.entity.Page;
+import com.spider.main.Launcher;
 import com.spider.util.common.Analyzer;
 
 public class HttpSpider {
-	
+	public static Logger logger;
+	static{
+		  logger = Logger.getLogger(HttpSpider.class.getName());
+		}
 	public  Page getHtmlContent(URL url, String encode) {  
 		Page page = new HtmlPage();
         StringBuffer contentBuffer = new StringBuffer();  
@@ -39,7 +45,6 @@ public class HttpSpider {
             InputStream inStr = con.getInputStream();  
             InputStreamReader istreamReader = new InputStreamReader(inStr, encode);  
             BufferedReader buffStr = new BufferedReader(istreamReader);  
-  
             String str = null;  
             while ((str = buffStr.readLine()) != null)  
                 contentBuffer.append(str);  

@@ -1,5 +1,2 @@
-
-if not exist target (call compile.bat)
-else(echo hehe)
-pause
-
+cd target/classes
+java com.spider.main.Launcher
