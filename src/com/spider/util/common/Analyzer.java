@@ -7,12 +7,21 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.spider.entity.ImageDes;
 import com.spider.entity.Page;
 
 public class Analyzer {
-	
+	public static Logger logger;
+	private static DateFormatter dateHelper;
+	{
+		logger = Logger.getLogger(Analyzer.class.getName());
+		dateHelper = DateFormatter.getInstance();
+	}
 	public static void analyzeHttpUrl(Page p,String prefix){
+		logger.debug("Analyzer begin to analyse the entire page code!  -----------------------------------------");
+		dateHelper.start();
 		String str = p.getContent();
 		int index = str.indexOf(prefix);
 		int end = str.lastIndexOf("\"");
@@ -24,9 +33,11 @@ public class Analyzer {
 			}
 			index = str.indexOf(prefix, index+1);
 		}
-		
+		logger.debug("Analyse lasts"+dateHelper.end()+"! and "+p.getHrefUrl().size()+" urls and founded! ------------------------------------------------");
 	}
 	public static List<ImageDes> analyzeImages(Page p){
+		logger.debug("find the imageUrls  analyzeImages begins! -----------------------------------------");
+		dateHelper.start();
 		List<String> httpUrl = p.getHrefUrl();
 		List<ImageDes> imageDeses = new ArrayList<ImageDes>();
 		for(String url: httpUrl){
@@ -38,25 +49,23 @@ public class Analyzer {
 			imageDeses.add(imageDes);
 		}
 		}
+		logger.debug("find the imageUrls  analyzeImages end! lasts"+dateHelper.end()+"   "+imageDeses.size()+" images url is found!-----------------------------------------");
 		return imageDeses;
 	}
 	
 	
 	
 	public static int generateImageFiles (List<ImageDes> imageDeses){
+		logger.debug("start to generate the images! -----------------------------------------");
+		dateHelper.start();
 		int count =0;
 		try{
-		
 		   for(ImageDes imageDes : imageDeses){
-			   
-			   
 			   if(imageDes.getName().indexOf(';')!=-1||imageDes.getName().indexOf('=')!=-1||imageDes.getName().indexOf(':')!=-1){
 			    	continue;
 			    }
 			URL url = new URL(imageDes.getUrl());
-		    //打开网络输入流
 		    DataInputStream dis = new DataInputStream(url.openStream());
-		    //建立一个新的文件
 		    File file = new File(System.getProperty("user.dir")+"/images/");
 		    if(!file.exists()){
 		    file.mkdirs();
@@ -76,7 +85,7 @@ public class Analyzer {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		   
+		logger.debug("generate end! lasts"+dateHelper.end()+"-----------------------------------------");
 		return count;
 	}
 	

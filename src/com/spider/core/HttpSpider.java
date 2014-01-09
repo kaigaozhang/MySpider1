@@ -27,17 +27,17 @@ public class HttpSpider {
         try {  
             con = (HttpURLConnection) url.openConnection();  
             con.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");// IE代理进行下载  
-            con.setConnectTimeout(60000);  
-            con.setReadTimeout(60000);  
+            con.setConnectTimeout(6000);  
+            con.setReadTimeout(6000);  
             responseCode = con.getResponseCode();  
             if (responseCode == -1) {  
-                System.out.println(url.toString() + " : connection is failure...");  
+               logger.error("responseCode=-1, request is failed!"); 
                 con.disconnect();  
                 return null;  
             }  
             if (responseCode >= 400) // 请求失败  
             {  
-                System.out.println("请求失败:get response code: " + responseCode);  
+                logger.error("responseCode =" + responseCode+" and request is failed!");  
                 con.disconnect();  
                 return null;  
             }  
