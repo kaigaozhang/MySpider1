@@ -19,7 +19,7 @@ public class HttpSpider {
 	static{
 		  logger = Logger.getLogger(HttpSpider.class.getName());
 		}
-	public  Page getHtmlContent(URL url, String encode) {  
+	public  Page getHtmlContent(URL url, String encode,String urlName) {  
 		Page page = new HtmlPage();
         StringBuffer contentBuffer = new StringBuffer();  
         int responseCode = -1;  
@@ -27,8 +27,8 @@ public class HttpSpider {
         try {  
             con = (HttpURLConnection) url.openConnection();  
             con.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");// IE代理进行下载  
-            con.setConnectTimeout(6000);  
-            con.setReadTimeout(6000);  
+            con.setConnectTimeout(10000);  
+            con.setReadTimeout(10000);  
             responseCode = con.getResponseCode();  
             if (responseCode == -1) {  
                logger.error("responseCode=-1, request is failed!"); 
@@ -58,8 +58,7 @@ public class HttpSpider {
         }  
         page.setContent(contentBuffer.toString());
         Analyzer.analyzeHttpUrl(page, "\"");
-       
-        System.out.println(Analyzer.generateImageFiles(Analyzer.analyzeImages(page))); 
+        System.out.println(Analyzer.generateImageFiles(Analyzer.analyzeImages(page),urlName)); 
         return page;  
     }  
   

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <urls>
-	<url name="sina" value="http://www.sina.com" />
+	<url name="baidnews" value="http://news.baidu.com/" />
+	<url name="tuzi" value="http://tieba.baidu.com/f?ie=utf-8&amp;kw=%E9%82%A3%E5%B9%B4%E9%82%A3%E5%85%94%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF" />
 </urls>

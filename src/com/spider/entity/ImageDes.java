@@ -28,7 +28,22 @@ public class ImageDes {
 	public void setSuffix(String suffix) {
 		this.suffix = suffix;
 	}
-	
 	public ImageDes() {
 	}
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		if(obj instanceof ImageDes){
+			if(((ImageDes) obj).url.equals(this.url)){
+				return true;
+			}
+		}
+		return false;
+	}
+	@Override
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		return url.hashCode();
+	}
+	
 }

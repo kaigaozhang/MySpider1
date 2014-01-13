@@ -1,20 +1,19 @@
 package com.spider.util.common;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.net.URL;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.spider.entity.ImageDes;
 import com.spider.entity.Page;
+import com.spider.threads.Thread4ImageFiles;
 
 public class Analyzer {
 	public static Logger logger;
 	private static DateFormatter dateHelper;
+	static
 	{
 		logger = Logger.getLogger(Analyzer.class.getName());
 		dateHelper = DateFormatter.getInstance();
@@ -28,24 +27,26 @@ public class Analyzer {
 		while(index!=end&& index+8<str.length()){
 			String test = str.substring(index+1, index+8);
 			if(test.equals("http://")){
-				
 				p.getHrefUrl().add(str.substring(index+1,str.indexOf(prefix, index+1)));
 			}
 			index = str.indexOf(prefix, index+1);
 		}
 		logger.debug("Analyse lasts"+dateHelper.end()+"! and "+p.getHrefUrl().size()+" urls and founded! ------------------------------------------------");
 	}
-	public static List<ImageDes> analyzeImages(Page p){
+	/*
+	 * in order to insert the different imageDes . use Set in stand of List
+	 */
+	public static Set<ImageDes> analyzeImages(Page p){
 		logger.debug("find the imageUrls  analyzeImages begins! -----------------------------------------");
 		dateHelper.start();
 		List<String> httpUrl = p.getHrefUrl();
-		List<ImageDes> imageDeses = new ArrayList<ImageDes>();
+		Set<ImageDes> imageDeses = new HashSet<ImageDes>();
 		for(String url: httpUrl){
 			String suffix = url.substring(url.lastIndexOf('.')+1, url.length());
 			
 		if(	suffix.equalsIgnoreCase("bmp")||suffix.equalsIgnoreCase("jpg")||suffix.equalsIgnoreCase("tiff")||suffix.equalsIgnoreCase("gif")||suffix.equalsIgnoreCase("pcx")||suffix.equalsIgnoreCase("tga")||suffix.equalsIgnoreCase("exif")||suffix.equalsIgnoreCase("jpeg")){
 			//imageUrl.add(url);
-			ImageDes imageDes = new ImageDes(url,url.substring(url.lastIndexOf('/'), url.lastIndexOf('.')),suffix);
+			ImageDes imageDes = new ImageDes(url,url.substring(url.lastIndexOf('/')+1, url.lastIndexOf('.')),suffix);
 			imageDeses.add(imageDes);
 		}
 		}
@@ -55,7 +56,7 @@ public class Analyzer {
 	
 	
 	
-	public static int generateImageFiles (List<ImageDes> imageDeses){
+	public static int generateImageFiles (Set<ImageDes> imageDeses,String urlName){
 		logger.debug("start to generate the images! -----------------------------------------");
 		dateHelper.start();
 		int count =0;
@@ -64,22 +65,8 @@ public class Analyzer {
 			   if(imageDes.getName().indexOf(';')!=-1||imageDes.getName().indexOf('=')!=-1||imageDes.getName().indexOf(':')!=-1){
 			    	continue;
 			    }
-			URL url = new URL(imageDes.getUrl());
-		    DataInputStream dis = new DataInputStream(url.openStream());
-		    File file = new File(System.getProperty("user.dir")+"/images/");
-		    if(!file.exists()){
-		    file.mkdirs();
-		    }
-		    File f1=new File(file,imageDes.getName()+"."+imageDes.getSuffix());
-		    f1.createNewFile();
-		    FileOutputStream fos = new FileOutputStream(f1);
-		    byte[] buffer = new byte[1024];
-		    int length;
-		    while( (length = dis.read(buffer))>0){
-		    fos.write(buffer,0,length);
-		    }
-		    dis.close();
-		    fos.close();
+			   Thread imageFileThread = new Thread(new Thread4ImageFiles(imageDes,urlName));
+			   imageFileThread.start();
 		    count++;
 		   }
 		}catch(Exception e){
