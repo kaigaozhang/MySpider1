@@ -4,10 +4,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.spider.entity.ImageDes;
 public class Thread4ImageFiles implements Runnable{
 	private ImageDes imageDes;
+	public static Set<ImageDes> ImageDesRestartSet = new HashSet<ImageDes>();
+	public static Map<String,Set<ImageDes>> restartSetMap = new HashMap<String,Set<ImageDes>>();
 	private String urlName;
 	 public Thread4ImageFiles(ImageDes imageDes,String urlName){
 		 this.imageDes = imageDes;
@@ -37,7 +43,8 @@ public class Thread4ImageFiles implements Runnable{
 	    fos.close();
 	    }catch(Exception e){
 	    	System.out.println(imageDes.getUrl());
-	    	e.printStackTrace();
+	    	ImageDesRestartSet.add(imageDes);
+	    	restartSetMap.put(urlName, ImageDesRestartSet);
 	    }
 	}
 	

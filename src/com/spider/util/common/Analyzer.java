@@ -2,6 +2,7 @@ package com.spider.util.common;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -13,6 +14,8 @@ import com.spider.threads.Thread4ImageFiles;
 public class Analyzer {
 	public static Logger logger;
 	private static DateFormatter dateHelper;
+	public static Thread thread = new Analyzer().thread;
+	
 	static
 	{
 		logger = Logger.getLogger(Analyzer.class.getName());
@@ -59,7 +62,6 @@ public class Analyzer {
 	public static int generateImageFiles (Set<ImageDes> imageDeses,String urlName){
 		logger.debug("start to generate the images! -----------------------------------------");
 		dateHelper.start();
-		int count =0;
 		try{
 		   for(ImageDes imageDes : imageDeses){
 			   if(imageDes.getName().indexOf(';')!=-1||imageDes.getName().indexOf('=')!=-1||imageDes.getName().indexOf(':')!=-1){
@@ -67,14 +69,56 @@ public class Analyzer {
 			    }
 			   Thread imageFileThread = new Thread(new Thread4ImageFiles(imageDes,urlName));
 			   imageFileThread.start();
-		    count++;
 		   }
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		logger.debug("generate end! lasts"+dateHelper.end()+"-----------------------------------------");
-		return count;
+		return 0;
 	}
+	public static void looper(Map<String, Set<ImageDes>> map){
+		Set<String> keySet = map.keySet();
+		for(String key: keySet){
+		generateImageFiles(map.get(key),key);
+	}
+	}
+	class looperThread implements Runnable{
+		private Map<String, Set<ImageDes>> map;
+		public looperThread(Map<String, Set<ImageDes>> map){
+			this.map = map;
+		}
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			while(!Thread4ImageFiles.restartSetMap.isEmpty()&&Thread4ImageFiles.restartSetMap.size()>10){
+				Thread.currentThread().setName("looperThread");
+				killChildernThread();
+				looper(map);
+				try {
+					Thread.sleep(100000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+	}
+	public static Thread looperThread= new Thread(new Analyzer().new looperThread(Thread4ImageFiles.restartSetMap));
 	
-	
+	public static void killChildernThread(){
+		 ThreadGroup tg = Thread.currentThread().getThreadGroup();
+	        Thread[] threads = new Thread[tg.activeCount()];
+	        int count = tg.enumerate(threads);
+	        for (int i = 0; i < count; i++) {
+	            System.out.println(threads[i].getName());
+	        }
+	}
 }
+
+
+
+
+
+
+
