@@ -62,14 +62,18 @@ public class Analyzer {
 	public static int generateImageFiles (Set<ImageDes> imageDeses,String urlName){
 		logger.debug("start to generate the images! -----------------------------------------");
 		dateHelper.start();
+		Thread4ImageFiles.totalCount = imageDeses.size();
+		Thread4ImageFiles.finishedCount = 0;
 		try{
 		   for(ImageDes imageDes : imageDeses){
 			   if(imageDes.getName().indexOf(';')!=-1||imageDes.getName().indexOf('=')!=-1||imageDes.getName().indexOf(':')!=-1){
 			    	continue;
 			    }
-			   Thread imageFileThread = new Thread(new Thread4ImageFiles(imageDes,urlName));
-			   imageFileThread.start();
+			   new Thread4ImageFiles(imageDes,urlName).start();
 		   }
+		   
+	//	   looperThread.start();
+		   
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -83,17 +87,18 @@ public class Analyzer {
 	}
 	}
 	class looperThread implements Runnable{
-		private Map<String, Set<ImageDes>> map;
-		public looperThread(Map<String, Set<ImageDes>> map){
-			this.map = map;
+		private List<Thread4ImageFiles> threadPool;
+		public looperThread(List<Thread4ImageFiles> threadPool){
+			this.threadPool = threadPool;
 		}
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			while(!Thread4ImageFiles.restartSetMap.isEmpty()&&Thread4ImageFiles.restartSetMap.size()>10){
-				Thread.currentThread().setName("looperThread");
-				killChildernThread();
-				looper(map);
+		//	while(!Thread4ImageFiles.restartSetMap.isEmpty()&&Thread4ImageFiles.restartSetMap.size()>10){
+			while(!Thread4ImageFiles.threadPool.isEmpty()){
+			//Thread.currentThread().setName("looperThread");
+			///	killChildernThread();  直接删除线程太过暴力，采取重现链接的方式
+			///	looper(map);
 				try {
 					Thread.sleep(100000);
 				} catch (InterruptedException e) {
@@ -104,7 +109,7 @@ public class Analyzer {
 		}
 		
 	}
-	public static Thread looperThread= new Thread(new Analyzer().new looperThread(Thread4ImageFiles.restartSetMap));
+	public static Thread looperThread= new Thread(new Analyzer().new looperThread(Thread4ImageFiles.threadPool));
 	
 	public static void killChildernThread(){
 		 ThreadGroup tg = Thread.currentThread().getThreadGroup();
