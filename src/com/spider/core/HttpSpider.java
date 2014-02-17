@@ -20,7 +20,7 @@ public class HttpSpider {
 		  logger = Logger.getLogger(HttpSpider.class.getName());
 		}
 	public  Page getHtmlContent(URL url, String encode,String urlName) {  
-		Page page = new HtmlPage();
+		HtmlPage page = new HtmlPage();
         StringBuffer contentBuffer = new StringBuffer();  
         int responseCode = -1;  
         HttpURLConnection con = null;  
@@ -57,8 +57,10 @@ public class HttpSpider {
             con.disconnect();  
         }  
         page.setContent(contentBuffer.toString());
+        
         Analyzer.analyzeHttpUrl(page, "\"");
-        System.out.println(Analyzer.generateImageFiles(Analyzer.analyzeImages(page),urlName)); 
+        
+        System.out.println(Analyzer.generateImageFiles(Analyzer.analyzeImages(page),urlName)); //生成图像文件
         return page;  
     }  
   

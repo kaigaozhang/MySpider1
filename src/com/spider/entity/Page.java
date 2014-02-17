@@ -1,8 +1,9 @@
 package com.spider.entity;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public abstract class Page {
   public static Types PAGETYPE;
@@ -10,7 +11,7 @@ public abstract class Page {
   private String suffix; 
   private byte[] data;
   private String content;
-  private List<String> hrefUrl = new ArrayList<String>();
+  private Set<String> hrefUrl = new HashSet<String>();
   private File[] imageFiles;
 public File[] getImageFiles() {
 	return imageFiles;
@@ -18,10 +19,10 @@ public File[] getImageFiles() {
 public void setImageFiles(File[] imageFiles) {
 	this.imageFiles = imageFiles;
 }
-public List<String> getHrefUrl() {
+public Set<String> getHrefUrl() {
 	return hrefUrl;
 }
-public void setHrefUrl(List<String> hrefUrl) {
+public void setHrefUrl(Set<String> hrefUrl) {
 	this.hrefUrl = hrefUrl;
 }
 public String getContent() {

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.spider.entity.HtmlPage;
 import com.spider.entity.ImageDes;
 import com.spider.entity.Page;
 import com.spider.threads.Thread4ImageFiles;
@@ -21,6 +22,11 @@ public class Analyzer {
 		logger = Logger.getLogger(Analyzer.class.getName());
 		dateHelper = DateFormatter.getInstance();
 	}
+	/*
+	 * find all urls 
+	 */
+	
+	
 	public static void analyzeHttpUrl(Page p,String prefix){
 		logger.debug("Analyzer begin to analyse the entire page code!  -----------------------------------------");
 		dateHelper.start();
@@ -29,20 +35,41 @@ public class Analyzer {
 		int end = str.lastIndexOf("\"");
 		while(index!=end&& index+8<str.length()){
 			String test = str.substring(index+1, index+8);
-			if(test.equals("http://")){
+			if(test.equals("http://")||test.equals("https://")){
 				p.getHrefUrl().add(str.substring(index+1,str.indexOf(prefix, index+1)));
 			}
 			index = str.indexOf(prefix, index+1);
 		}
+		
+		
+			Set<String> httpUrl = p.getHrefUrl();
+			for(String url: httpUrl){
+				String suffix = url.substring(url.lastIndexOf('.')+1, url.length());
+				if(suffix.equalsIgnoreCase("html")
+				 ||suffix.equalsIgnoreCase("jsp")
+				 ||suffix.equalsIgnoreCase("htm")
+				 ||suffix.equalsIgnoreCase("action")
+				 ||suffix.equalsIgnoreCase("php")
+				 ||suffix.equalsIgnoreCase("asp")
+				 ||suffix.equalsIgnoreCase("aspx")){
+					Page sonPage = new HtmlPage();
+					
+				}
+		}
+		
+		
 		logger.debug("Analyse lasts"+dateHelper.end()+"! and "+p.getHrefUrl().size()+" urls and founded! ------------------------------------------------");
 	}
-	/*
+	
+	
+	
+	/* for images
 	 * in order to insert the different imageDes . use Set in stand of List
 	 */
 	public static Set<ImageDes> analyzeImages(Page p){
 		logger.debug("find the imageUrls  analyzeImages begins! -----------------------------------------");
 		dateHelper.start();
-		List<String> httpUrl = p.getHrefUrl();
+		Set<String> httpUrl = p.getHrefUrl();
 		Set<ImageDes> imageDeses = new HashSet<ImageDes>();
 		for(String url: httpUrl){
 			String suffix = url.substring(url.lastIndexOf('.')+1, url.length());

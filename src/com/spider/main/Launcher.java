@@ -26,6 +26,7 @@ public class Launcher {
 	  logger.debug("system started!");
 	  try{
 		  for(BaseURL baseURL : BaseURLList){
+			  // return the baseNode of the tree
 		  Page page = new HttpSpider().getHtmlContent(new URL(baseURL.getValueURL()), "UTF-8",baseURL.getName());
 		  }
 	  }catch(Exception e){
