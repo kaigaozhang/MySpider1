@@ -4,30 +4,37 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import com.spider.core.HttpSpider;
 import com.spider.entity.HtmlPage;
 import com.spider.entity.ImageDes;
 import com.spider.entity.Page;
+import com.spider.threads.Thread4HtmlContentAnalyze;
 import com.spider.threads.Thread4ImageFiles;
 
 public class Analyzer {
 	public static Logger logger;
 	private static DateFormatter dateHelper;
 	public static Thread thread = new Analyzer().thread;
-	
+	static ThreadPoolExecutor tpe; //thread pool
 	static
 	{
 		logger = Logger.getLogger(Analyzer.class.getName());
 		dateHelper = DateFormatter.getInstance();
+		tpe = new ThreadPoolExecutor(20, 40, 1, TimeUnit.DAYS,
+	            new LinkedBlockingQueue<Runnable>(),new ThreadPoolExecutor.DiscardOldestPolicy());
 	}
 	/*
 	 * find all urls 
 	 */
 	
 	
-	public static void analyzeHttpUrl(Page p,String prefix){
+	public static void analyzeHttpUrl(HtmlPage p,String prefix){
 		logger.debug("Analyzer begin to analyse the entire page code!  -----------------------------------------");
 		dateHelper.start();
 		String str = p.getContent();
@@ -43,6 +50,9 @@ public class Analyzer {
 		
 		
 			Set<String> httpUrl = p.getHrefUrl();
+			if(httpUrl.size()==0){
+				p.leafNode=true;
+			}
 			for(String url: httpUrl){
 				String suffix = url.substring(url.lastIndexOf('.')+1, url.length());
 				if(suffix.equalsIgnoreCase("html")
@@ -52,8 +62,12 @@ public class Analyzer {
 				 ||suffix.equalsIgnoreCase("php")
 				 ||suffix.equalsIgnoreCase("asp")
 				 ||suffix.equalsIgnoreCase("aspx")){
-					Page sonPage = new HtmlPage();
-					
+					HtmlPage sonPage = new HtmlPage();
+					sonPage.setHttpurl(url);
+					p.getSonPages().add(sonPage);// father - son relationship
+					sonPage.setFatherPage(p);
+					sonPage.baseNode=false;
+					tpe.execute(new Thread4HtmlContentAnalyze(sonPage));
 				}
 		}
 		

@@ -8,8 +8,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.spider.core.HttpSpider;
 import com.spider.entity.BaseURL;
-import com.spider.entity.Page;
-import com.spider.util.common.DateFormatter;
+import com.spider.entity.HtmlPage;
 import com.spider.util.common.XMLResolver;
 
 public class Launcher {
@@ -27,7 +26,11 @@ public class Launcher {
 	  try{
 		  for(BaseURL baseURL : BaseURLList){
 			  // return the baseNode of the tree
-		  Page page = new HttpSpider().getHtmlContent(new URL(baseURL.getValueURL()), "UTF-8",baseURL.getName());
+			  HtmlPage page = new HtmlPage();
+			  page.baseNode = true;
+			  page.setHttpurl(baseURL.getValueURL());
+		HtmlPage p = HttpSpider.getInstance().getHtmlContent(new URL(baseURL.getValueURL()), "UTF-8",baseURL.getName(),page);
+		p.getHrefUrl();
 		  }
 	  }catch(Exception e){
 		  e.printStackTrace();

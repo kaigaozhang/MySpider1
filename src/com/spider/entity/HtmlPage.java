@@ -5,8 +5,8 @@ import java.util.List;
 
 public class HtmlPage extends Page{
 	
-	public boolean baseNode;
-	public boolean leafNode;
+	public boolean baseNode = false;
+	public boolean leafNode = false;
 	
 	public List<HtmlPage> sonPages = new ArrayList<HtmlPage>();
 
